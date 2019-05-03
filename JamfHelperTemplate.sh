@@ -66,7 +66,7 @@ else
 fi
 
 #what are we doing with results
-if [ "$prompt" == "0" ]; then
+if [ "$prompt" == "1" ]; then
     echo "User elected to start immediately, Updating.."
     jamf policy -trigger "$JSSTrigger" && SendToLog "Executing policy update for $JSSTrigger"
     SendToLog "Script exit"
