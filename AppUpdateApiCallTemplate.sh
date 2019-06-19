@@ -126,7 +126,8 @@ function AppUpdate(){
   HalfCalc=$(expr $calcdate / 2)
   SendToLog "Runtime:$RunTime NextSat:$NextSat JSSHelper Values of: $calcdate $HalfCalc"
   # Is Application Open
-  if [ pgrep -x "$process" > /dev/null ]; then
+  AppRunning=$(pgrep -x "$process")
+  if [ "$AppRunning" != "" ]; then
       echo "$process Running"
       SendToLog "$process was open at runtime; prompting user for update"
       prompt=`"/Library/Application Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper" -windowType hud -title "$title" -heading "$heading" -alignHeading justified -description "$text" -alignDescription left -icon "$icon" -button1 'Update' -showDelayOptions "0, 10800, 21600, 43200, $HalfCalc, $calcdate" -timeout 3600 -countdown -lockHUD`
