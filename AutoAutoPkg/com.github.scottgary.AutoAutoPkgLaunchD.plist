@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>SHELL</key>
+		<string>/bin/bash</string>
+	</dict>
+	<key>KeepAlive</key>
+	<false/>
+	<key>Label</key>
+	<string>io.mfj.autopkg.autoautopkg</string>
+	<key>Program</key>
+	<string>/usr/local/bin/AutoAutoPkg</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Applications/Utilities/DetectX\ Swift.app</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StandardErrorPath</key>
+	<string>/tmp/io.mfj.autopkg.autoautopkg.err</string>
+	<key>StandardOutPath</key>
+	<string>/tmp/io.mfj.autopkg.autoautopkg.out</string>
+	<key>StartInterval</key>
+	<integer>43200</integer>
+</dict>
+</plist>
