@@ -117,7 +117,7 @@ AutoPkgCheck(){
             AutoPkgRepo="$HOME/Library/AutoPkg/Cache"
             export AutoPkgRepo="$AutoPkgRepo"
           else
-            echo "All AutoPkg veriables verified"
+            echo "All AutoPkg variables verified"
             export AutoPkgRepo="$AutoPkgRepo"
           fi
         fi
