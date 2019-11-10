@@ -1,0 +1,24 @@
+GoogleChrome 56 44
+Firefox 24 14
+Vivaldi 263 45
+VirtualBox 263 61
+RStudio 45 23
+R.app 269 61
+Plex 248 51
+GitHubDesktop 27 37
+Dropbox 95 41
+BBEdit
+MicrosoftRemoteDesktop 256 64
+AirServer 78
+1Password 28 38
+YubiKeyAuthenticator 12 46
+Postman 266 55
+Cyberduck 267 56
+Docker 48 22
+LibreOffice 70 20
+Tunnelblick 113 27
+SublimeText3 265 54
+Slack 235 28
+AdobeCreativeCloudInstaller 106
+AdobeReaderDC 91 39
+DriveFS 190
