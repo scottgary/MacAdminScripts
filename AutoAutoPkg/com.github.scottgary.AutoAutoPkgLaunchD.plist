@@ -15,7 +15,7 @@
 	<string>/usr/local/bin/AutoAutoPkg</string>
 	<key>ProgramArguments</key>
 	<array>
-		<string>/Applications/Utilities/DetectX\ Swift.app</string>
+		<string></string>
 	</array>
 	<key>RunAtLoad</key>
 	<true/>
