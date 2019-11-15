@@ -58,10 +58,10 @@ ConvertJPG(){
       echo "No new jpeg pictures found for report; skipping"
     else
       # Convert jpg files to png for concatenate
-      for i in /Users/"$CurrentUser"/Documents/Receipts/*.jpg
+      for i in $NewJpgs
         do sips -s format png -s formatOptions 70 "${i}" --out "${i%jpg}png"
       done
-      for i in /Users/"$CurrentUser"/Documents/Receipts/*.jpeg
+      for i in $NewJpegs
         do sips -s format png -s formatOptions 70 "${i}" --out "${i%jpeg}png"
       done
     fi
