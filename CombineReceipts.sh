@@ -114,6 +114,6 @@ SlackNotify "$CurrentUser"
 ZipArchive
 
 #clean up receipt folder
-rm -rf   "${ReceiptRepo}:?"/*
+rm -rf "${ReceiptRepo}:?"/*
 
 exit 0
