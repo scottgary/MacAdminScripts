@@ -10,8 +10,11 @@ SlackHook="" #Webhook URL
 Channel=""
 Username=""
 EMOJI="" # Used as user icon
-#
+# Get Current User:
 CurrentUser=$(scutil <<< "show State:/Users/ConsoleUser" | awk '/Name :/ && ! /loginwindow/ { print $3 }')
+ReceiptRepo="/Users/$CurrentUser/Documents/Receipts" # Path to Users Receipt files
+ReceiptArchive="/Users/$CurrentUser/Documents/Receipt Archive"
+# Jamf Helper Mesaage for Prompt to Install of Libre Office
 MSG="Help make this tool even better!
 
 Installing Libre Office will allow you to also convert .docx (Word Documents) with your receipts too! Click Install Now to install LibreOffice and continue or install in Self-Service later under the Office Category
@@ -34,14 +37,14 @@ SlackNotify(){
 
 ConvertPNG(){
   # Check for PNGs
-  NewPngs=$(find /Users/"$CurrentUser"/Documents/Receipts/*.png )
+  NewPngs=$(find "$ReceiptRepo"/*.png )
   if [ -z "$NewPngs" ]; then
     echo "No new pngs found for report; skipping"
   else
     # Convert png files to PDF for concatenate
     for i in $NewPngs
     do
-      sips -s format pdf  "${i}" --out /Users/"$CurrentUser"/Documents/Receipts/
+      sips -s format pdf  "${i}" --out   "$ReceiptRepo"/
     done
   fi
 
@@ -49,8 +52,8 @@ ConvertPNG(){
 
 ConvertJPG(){
   # Check for JPGs
-  NewJpgs=$(find /Users/"$CurrentUser"/Documents/Receipts/*.jpg )
-  NewJpegs=$(find /Users/"$CurrentUser"/Documents/Receipts/*.jpeg )
+  NewJpgs=$(find "$ReceiptRepo"/*.jpg )
+  NewJpegs=$(find "$ReceiptRepo"/*.jpeg )
   if [ -z "$NewJpgs" ]; then
     echo "No new jpg pictures found for report; skipping"
   else
@@ -82,13 +85,13 @@ ConvertDOC(){
         echo "User elected to not install; continuing run"
     fi
   else
-    NewDocxs=$(find /Users/"$CurrentUser"/Documents/Receipts/*.docx )
+    NewDocxs=$(find "$ReceiptRepo"/*.docx )
     if [ -z "$NewDocxs" ]; then
       echo "No .docx files found for report; skipping run"
     else
       for i in $NewDocxs
        do
-          /Applications/LibreOffice.app/Contents/MacOS/soffice --invisible --headless --convert-to pdf "${i}" --outdir /Users/"$CurrentUser"/Documents/Receipts/
+          /Applications/LibreOffice.app/Contents/MacOS/soffice --invisible --headless --convert-to pdf "${i}" --outdir   "$ReceiptRepo"/
        done
     fi
   fi
@@ -96,9 +99,9 @@ ConvertDOC(){
 
 ZipArchive(){
   #Compress currernt files in folder
-  zip -q -r  "/Users/$CurrentUser/Documents/Receipts/Receipts-$(date +"%Y-%m-%d").zip" /Users/"$CurrentUser"/Documents/Receipts/
+  zip -q -r  "$ReceiptRepo/$CurrentUser-receipts-$(date +"%Y-%m-%d").zip" "$ReceiptRepo"/
   #Move zip for save
-  mv "/Users/$CurrentUser/Documents/Receipts/Receipts-$(date +"%Y-%m-%d").zip" /Users/"$CurrentUser"/Documents/Receipt\ Archive
+  mv "$ReceiptRepo/$CurrentUser-receipts-$(date +"%Y-%m-%d").zip" "$ReceiptArchive"
 
 }
 
@@ -106,11 +109,11 @@ ConvertDOC
 ConvertJPG
 ConvertPNG
 #Concatenate PDFs
-"/System/Library/Automator/Combine PDF Pages.action/Contents/Resources/join.py" -o "/Volumes/GoogleDrive/Shared drives/General/ExpenseReceipts/$CurrentUser.Receipts-$(date +"%m-%Y").pdf"  /Users/"$CurrentUser"/Documents/Receipts/*.pdf
+"/System/Library/Automator/Combine PDF Pages.action/Contents/Resources/join.py" -o "/Volumes/GoogleDrive/Shared drives/General/ExpenseReceipts/$CurrentUser.Receipts-$(date +"%m-%Y").pdf"    "$ReceiptRepo"/*.pdf
 SlackNotify "$CurrentUser"
 ZipArchive
 
 #clean up receipt folder
-rm -rf /Users/"$CurrentUser"/Documents/Receipts/*
+rm -rf   "${ReceiptRepo}:?"/*
 
 exit 0
