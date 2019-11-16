@@ -44,7 +44,7 @@ ConvertPNG(){
     # Convert png files to PDF for concatenate
     for i in $NewPngs
     do
-      sips -s format pdf  "${i}" --out   "$ReceiptRepo"/
+      sips -s format pdf  "${i}" --out "$ReceiptRepo"/
     done
   fi
 
@@ -91,7 +91,7 @@ ConvertDOC(){
     else
       for i in $NewDocxs
        do
-          /Applications/LibreOffice.app/Contents/MacOS/soffice --invisible --headless --convert-to pdf "${i}" --outdir   "$ReceiptRepo"/
+          /Applications/LibreOffice.app/Contents/MacOS/soffice --invisible --headless --convert-to pdf "${i}" --outdir "$ReceiptRepo"/
        done
     fi
   fi
@@ -99,7 +99,7 @@ ConvertDOC(){
 
 ZipArchive(){
   #Compress currernt files in folder
-  zip -q -r  "$ReceiptRepo/$CurrentUser-receipts-$(date +"%Y-%m-%d").zip" "$ReceiptRepo"/
+  zip -q -r "$ReceiptRepo/$CurrentUser-receipts-$(date +"%Y-%m-%d").zip" "$ReceiptRepo"/
   #Move zip for save
   mv "$ReceiptRepo/$CurrentUser-receipts-$(date +"%Y-%m-%d").zip" "$ReceiptArchive"
 
