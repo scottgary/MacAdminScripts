@@ -68,17 +68,17 @@ LaunchDaemon='<?xml version="1.0" encoding="UTF-8"?>
 </plist>'
 
 if [[ "$SelectedTime" == "$Defer1" ]] || [[ "$SelectedTime" == "$Defer2" ]] || [[ "$SelectedTime" == "$Defer3" ]] || [[ "$SelectedTime" == "$Defer4" ]]; then
-  tee "/Library/LaunchDaemons/$PlistName" << EOF
+  /usr/bin/tee "/Library/LaunchDaemons/$PlistName" << EOF
   $(echo "$LaunchDaemon")
 EOF
 elif [[ "$SelectedTime" = 0 ]]; then
   echo "running now"
-  jamf policy -event "$Trigger"
+  /usr/local/bin/jamf policy -event "$Trigger"
 else
   echo "Something went wrong!"
 fi
 # Daemon Permissions:
 
-chown root:wheel "/Library/LaunchDaemons/$PlistName"
-chmod 644 "/Library/LaunchDaemons/$PlistName"
-launchctl bootstrap system "/Library/LaunchDaemons/$PlistName"
+/usr/sbin/chown root:wheel "/Library/LaunchDaemons/$PlistName"
+/bin/chmod 644 "/Library/LaunchDaemons/$PlistName"
+/bin/launchctl bootstrap system "/Library/LaunchDaemons/$PlistName"
