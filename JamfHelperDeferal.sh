@@ -15,7 +15,7 @@ Defer3="$9"
 Defer4="${10}"
 Trigger="${11}"
 AppName=""
-PlistName="com.jamfsoftware.SoftwareUpdater$AppName"
+PlistName="com.jamfsoftware.SoftwareUpdater$AppName.plist"
 ##############################################################################
 ##############################################################################
 # Var error handling
