@@ -71,14 +71,15 @@ if [[ "$SelectedTime" == "$Defer1" ]] || [[ "$SelectedTime" == "$Defer2" ]] || [
   /usr/bin/tee "/Library/LaunchDaemons/$PlistName" << EOF
   $(echo "$LaunchDaemon")
 EOF
+  # Daemon Permissions:
+  /usr/sbin/chown root:wheel "/Library/LaunchDaemons/$PlistName"
+  /bin/chmod 644 "/Library/LaunchDaemons/$PlistName"
+  /bin/launchctl bootstrap system "/Library/LaunchDaemons/$PlistName"
 elif [[ "$SelectedTime" = 0 ]]; then
   echo "running now"
   /usr/local/bin/jamf policy -event "$Trigger"
 else
   echo "Something went wrong!"
 fi
-# Daemon Permissions:
 
-/usr/sbin/chown root:wheel "/Library/LaunchDaemons/$PlistName"
-/bin/chmod 644 "/Library/LaunchDaemons/$PlistName"
-/bin/launchctl bootstrap system "/Library/LaunchDaemons/$PlistName"
+exit 0
