@@ -32,11 +32,17 @@ echo "$SelectedTime"
 
 # Get Date for Daemon
 Epoch=$(date '+%s')
+echo "epoch time: $Epoch"
 Epoch2=$(( Epoch + SelectedTime ))
+echo "Adding User Selected Time to epoch: $Epoch2"
 NewMonth=$(date -jf %s "$Epoch2" "+%m")
+echo "Coverting to month: $NewMonth"
 NewDay=$(date -jf %s "$Epoch2" "+%d")
+echo "Coverting to Day: $NewDay"
 NewHour=$(date -jf %s "$Epoch2" "+%H")
+echo "Coverting to Hour: $NewHour"
 NewMinute=$(date -jf %s "$Epoch2" "+%M")
+echo "Coverting to Minute: $NewMinute"
 
 # Write out Launch Daemon using StartCalendarInterval instead of StartInterval to make sure it still runs on time if computer rebooted
 LaunchDaemon='<?xml version="1.0" encoding="UTF-8"?>
@@ -44,7 +50,7 @@ LaunchDaemon='<?xml version="1.0" encoding="UTF-8"?>
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>com.jamfsoftware.task.MacOSUpdates</string>
+  <string>com.jamfsoftware.PolicyDeferal.'$Trigger'</string>
   <key>ProgramArguments</key>
   <array>
     <string>/usr/local/jamf/bin/jamf</string>
@@ -79,7 +85,7 @@ EOF
   /bin/launchctl bootstrap system "/Library/LaunchDaemons/$PlistName"
 elif [[ "$SelectedTime" = 0 ]]; then
   # User selected to run immediately
-  echo "running now"
+  echo "executing policy now"
   /usr/local/bin/jamf policy -event "$Trigger"
 else
   # If countdown runs out or other errors exist
