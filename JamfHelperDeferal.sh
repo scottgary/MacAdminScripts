@@ -6,25 +6,25 @@
 #                                                                            #
 ##############################################################################
 # Global Vars:
-heading="$4"
-text="$5"
-Defer1="$6"
-Defer2="$7"
-Defer3="$8"
-Defer4="$9"
-Trigger="${10}"
-PolicyName="${11}"
-PlistName="com.jamfsoftware.PolicyDeferal.$PolicyName.plist"
+title="$4"
+heading="$5"
+text="$6"
+Defer1="$7"
+Defer2="$8"
+Defer3="$9"
+Defer4="${10}"
+Trigger="${11}"
+PlistName="com.jamfsoftware.PolicyDeferal.$Trigger.plist"
 ##############################################################################
 ##############################################################################
 # Var error handling
 if [[ -z "$title" ]] || [[ -z "$heading" ]] || [[ -z "$text" ]] || [[ -z "$Defer1" ]] || [[ -z "$Defer2" ]] || [[ -z "$Defer3" ]] || [[ -z "$Defer4" ]] || [[ -z "$Trigger" ]] || [[ -z "$PlistName" ]]; then
-  echo "blank vars! exiting"
+  echo "Jamf Parameters Missing; exiting..."
   exit 0
 fi
 
 # Jamf Helper binary: Change -title to fit your org. This uses the -icon for Self Service for custom branding.
-buttonWithDelay=$("/Library/Application Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper" -windowType hud -title "Measures for Justice IT" -heading "$heading" -alignHeading justified -description "$text" -alignDescription left -icon /Applications/Self\ Service.app/Contents/Resources/AppIcon.icns -button1 'Select' -showDelayOptions "0, $Defer1, $Defer2, $Defer3, $Defer4" -timeout 120 -countdown -lockHUD)
+buttonWithDelay=$("/Library/Application Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper" -windowType hud -title "$title" -heading "$heading" -alignHeading justified -description "$text" -alignDescription left -icon /Applications/Self\ Service.app/Contents/Resources/AppIcon.icns -button1 'Select' -showDelayOptions "0, $Defer1, $Defer2, $Defer3, $Defer4" -timeout 120 -countdown -lockHUD)
 echo "$buttonWithDelay"
 # Take off Jamf Helper Button Return Code
 SelectedTime=${buttonWithDelay%?}
@@ -38,7 +38,7 @@ NewDay=$(date -jf %s "$Epoch2" "+%d")
 NewHour=$(date -jf %s "$Epoch2" "+%H")
 NewMinute=$(date -jf %s "$Epoch2" "+%M")
 
-# Write out Launch Daemon using StartCalendarInterval instead of StartInterval to make sure it still runs if computer rebooted
+# Write out Launch Daemon using StartCalendarInterval instead of StartInterval to make sure it still runs on time if computer rebooted
 LaunchDaemon='<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
