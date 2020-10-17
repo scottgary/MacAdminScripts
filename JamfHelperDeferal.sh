@@ -1,10 +1,12 @@
 #!/bin/bash
 
-##############################################################################
-# Jamf Helper Template Deferral Script                                       #
-#  ScottGary 10/14/2020                                                      #
-#                                                                            #
-##############################################################################
+#########################################################################################################################################################################################################
+# Jamf Helper Template Deferral Script                                                                                                                                                                  #
+#  ScottGary 10/14/2020                                                                                                                                                                                 #
+#  Triggered policy should have "Files & Processes" enabled and execute:                                                                                                                                #
+#  `launchctl bootout system /Library/LaunchDaemons/com.jamfsoftware.PolicyDeferal.{YOUR_TRIGGER}.plist | rm -rf /Library/LaunchDaemons/com.jamfsoftware.PolicyDeferal.{YOUR_TRIGGER}.plist'            #
+#                                                                                                                                                                                                       #
+#########################################################################################################################################################################################################
 # Global Vars:
 title="$4"
 heading="$5"
