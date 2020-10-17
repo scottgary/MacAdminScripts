@@ -23,6 +23,17 @@ if [[ -z "$title" ]] || [[ -z "$heading" ]] || [[ -z "$text" ]] || [[ -z "$Defer
   exit 0
 fi
 
+# Fuction for getting epoch time into daemon:
+TimeForDaemon(){
+  InputTime="$1"
+  Epoch=$(date '+%s')
+  Epoch2=$(( Epoch + InputTime ))
+  NewMonth=$(date -jf %s "$Epoch2" "+%m")
+  NewDay=$(date -jf %s "$Epoch2" "+%d")
+  NewHour=$(date -jf %s "$Epoch2" "+%H")
+  NewMinute=$(date -jf %s "$Epoch2" "+%M")
+}
+
 # Jamf Helper binary: Change -title to fit your org. This uses the -icon for Self Service for custom branding.
 buttonWithDelay=$("/Library/Application Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper" -windowType hud -title "$title" -heading "$heading" -alignHeading justified -description "$text" -alignDescription left -icon /Applications/Self\ Service.app/Contents/Resources/AppIcon.icns -button1 'Select' -showDelayOptions "0, $Defer1, $Defer2, $Defer3, $Defer4" -timeout 120 -countdown -lockHUD)
 echo "$buttonWithDelay"
@@ -30,19 +41,7 @@ echo "$buttonWithDelay"
 SelectedTime=${buttonWithDelay%?}
 echo "$SelectedTime"
 
-# Get Date for Daemon
-Epoch=$(date '+%s')
-echo "epoch time: $Epoch"
-Epoch2=$(( Epoch + SelectedTime ))
-echo "Adding User Selected Time to epoch: $Epoch2"
-NewMonth=$(date -jf %s "$Epoch2" "+%m")
-echo "Coverting to month: $NewMonth"
-NewDay=$(date -jf %s "$Epoch2" "+%d")
-echo "Coverting to Day: $NewDay"
-NewHour=$(date -jf %s "$Epoch2" "+%H")
-echo "Coverting to Hour: $NewHour"
-NewMinute=$(date -jf %s "$Epoch2" "+%M")
-echo "Coverting to Minute: $NewMinute"
+TimeForDaemon "$SelectedTime"
 
 # Write out Launch Daemon using StartCalendarInterval instead of StartInterval to make sure it still runs on time if computer rebooted
 LaunchDaemon='<?xml version="1.0" encoding="UTF-8"?>
