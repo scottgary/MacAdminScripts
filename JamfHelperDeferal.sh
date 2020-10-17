@@ -3,7 +3,7 @@
 #########################################################################################################################################################################################################
 # Jamf Helper Template Deferral Script                                                                                                                                                                  #
 #  ScottGary 10/14/2020                                                                                                                                                                                 #
-#  Triggered policy should have "Files & Processes" enabled and execute:                                                                                                                                #
+#  Triggered policy should have "Files & Processes" enabled and execute command:                                                                                                                        #
 #  `launchctl bootout system /Library/LaunchDaemons/com.jamfsoftware.PolicyDeferal.{YOUR_TRIGGER}.plist | rm -rf /Library/LaunchDaemons/com.jamfsoftware.PolicyDeferal.{YOUR_TRIGGER}.plist'            #
 #                                                                                                                                                                                                       #
 #########################################################################################################################################################################################################
@@ -41,7 +41,7 @@ buttonWithDelay=$("/Library/Application Support/JAMF/bin/jamfHelper.app/Contents
 echo "$buttonWithDelay"
 # Take off Jamf Helper Button Return Code
 SelectedTime=${buttonWithDelay%?}
-echo "$SelectedTime"
+echo "User has selected to dely for: $SelectedTime"
 
 TimeForDaemon "$SelectedTime"
 
@@ -86,7 +86,7 @@ EOF
   /bin/launchctl bootstrap system "/Library/LaunchDaemons/$PlistName"
 elif [[ "$SelectedTime" = 0 ]]; then
   # User selected to run immediately
-  echo "executing policy now"
+  echo "Executing policy now"
   /usr/local/bin/jamf policy -event "$Trigger"
 else
   # If countdown runs out or other errors exist
