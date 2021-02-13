@@ -15,53 +15,36 @@ SnipeServer=""
 SnipeBearer=""
 # Machine Serial
 SerialNumber=$(ioreg -l | grep IOPlatformSerialNumber | awk -F "\"" '{print $4}')
-echo "$SerialNumber"
 # Local MacOS version
 LocalOsVersion=$(sw_vers | grep "ProductVersion" | awk -F " " '{print $2}')
-echo "$LocalOsVersion"
 
 # Pull Jamf Record for Snipe-IT:
 JamfRecord=$(curl -s -H "authorization: basic $JamfApiCreds" -H "accept: application/xml" "$JamfServer/JSSResource/computers/serialnumber/$SerialNumber" | xmllint --format -)
 # Get Jamf General info for Snipe:
 JamfId=$(echo "$JamfRecord" | xmllint --xpath '/computer/general/id/text()' -)
-echo "Jamf ID: $JamfId"
 JamfName=$(echo "$JamfRecord" | xmllint --xpath '/computer/general/name/text()' -)
-echo "Jamf Name: $JamfName"
 JamfMacAddress=$(echo "$JamfRecord" | xmllint --xpath '/computer/general/mac_address/text()' -)
-echo "Jamf MAC: $JamfMacAddress"
 JamfAlternateMacAddress=$(echo "$JamfRecord" | xmllint --xpath '/computer/general/alt_mac_address/text()' -)
-echo "Jamf ALT_MAC: $JamfAlternateMacAddress"
 JamfUdid=$(echo "$JamfRecord" | xmllint --xpath '/computer/general/udid/text()' -)
-echo "Jamf UDID: $JamfUdid"
 JamfDepStatus=$(echo "$JamfRecord" | xmllint --xpath '/computer/general/management_status/enrolled_via_dep/text()' -)
-echo "DEP Status: $JamfDepStatus"
 JamfPublicIP=$(echo "$JamfRecord" | xmllint --xpath '/computer/general/ip_address/text()' -)
-echo "Public IP: $JamfPublicIP"
 JamfLocalIP=$(echo "$JamfRecord" | xmllint --xpath '/computer/general/last_reported_ip/text()' -)
-echo "Local IP: $JamfLocalIP"
+
 # Get Jamf Hardware info for Snipe:
 JamfModel=$(echo "$JamfRecord" | xmllint --xpath 'computer/hardware/model/text()' -)
-echo "Jamf Model: $JamfModel"
 JamfModelID=$(echo "$JamfRecord" | xmllint --xpath 'computer/hardware/model_identifier/text()' -)
-echo "Jamf Model ID: $JamfModelID"
 JamfProcessorType=$(echo "$JamfRecord" | xmllint --xpath 'computer/hardware/processor_type/text()' -)
-echo "Jamf ProcessorType: $JamfProcessorType"
 JamfProcessorSpeed=$(echo "$JamfRecord" | xmllint --xpath 'computer/hardware/processor_speed_mhz/text()' -)
-echo "Jamf ProcessorSpeed: $JamfProcessorSpeed"
 JamfTotalRam=$(echo "$JamfRecord" | xmllint --xpath 'computer/hardware/total_ram/text()' -)
-echo "Jamf TotalRam: $JamfTotalRam"
 JamfSipStatus=$(echo "$JamfRecord" | xmllint --xpath 'computer/hardware/sip_status/text()' -)
-echo "Jamf SipStatus: $JamfSipStatus"
 JamfSmartStatus=$(echo "$JamfRecord" | xmllint --xpath 'computer/hardware/storage/device/smart_status/text()' -)
-echo "SMART: $JamfSmartStatus"
 if [[ "$JamfSipStatus" == "Enabled" ]]; then
   SnipeSipStatus="true"
 else
   SnipeSipStatus="false"
 fi
 echo "Snipe SIP: $SnipeSipStatus"
-JamfLink="https://measuresforjustice.jamfcloud.com/computers.html?id=$JamfId"
-echo "$JamfLink"
+JamfLink="https://acme.jamfcloud.com/computers.html?id=$JamfId"
 
 # Snipe searh for asset by serial:
 SnipeSearch=$(curl -s -H "Authorization: Bearer $SnipeBearer" "$SnipeServer/hardware?limit=2&offset=0&search=$SerialNumber")
