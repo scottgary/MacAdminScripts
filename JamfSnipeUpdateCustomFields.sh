@@ -7,6 +7,7 @@
 ################################################################################
 # Global Vars                                                                  #
 ################################################################################
+set -x
 # Jamf Variables:
 JamfServer=""
 JamfApiCreds=""
@@ -71,10 +72,12 @@ if [[ -z "$SnipeId" ]]; then
 else
   echo "Device found in Snipe, updating record"
   # Snipe-IT Payload templates as Vars:
-  SnipeUpdateAsset1='{"name":"'$JamfName'","_snipeit_mac_1":"'$JamfMacAddress'","_snipeit_alt_mac_3":"'$JamfAlternateMacAddress'","_snipeit_processor_type_4":"'$JamfProcessorType'","_snipeit_processor_speed_5":"'$JamfProcessorSpeed'","_snipeit_total_ram_6":"'$JamfTotalRam'","_snipeit_dep_status_8":"'$JamfDepStatus'","_snipeit_sip_status_7":"'$SnipeSipStatus'","_snipeit_smart_status_12":"'$JamfSmartStatus'","_snipeit_udid_9":"'$JamfUdid'","_snipeit_public_ip_10":"'$JamfPublicIP'","_snipeit_local_ip_11":"'$JamfLocalIP'","_snipeit_jamf_url_2":"'$JamfLink'"}'
-  #SnipeUpdateAsset='{"name":"'$JamfName'","custom_fields":{"MAC":{"field":"_snipeit_mac_1","value":"'$JamfMacAddress'","field_format":"MAC"},"alt_mac":{"field":"_snipeit_alt_mac_3","value":"'$JamfAlternateMacAddress'","field_format":"MAC"},"processor_type":{"field":"_snipeit_processor_type_4","value":"'$JamfProcessorType'","field_format":"ANY"},"processor_speed":{"field":"_snipeit_processor_speed_5","value":"'$JamfProcessorSpeed'","field_format":"NUMERIC"},"total_ram":{"field":"_snipeit_total_ram_6","value":"'$JamfTotalRam'","field_format":"NUMERIC"},"dep_status":{"field":"_snipeit_dep_status_8","value":"'$JamfDepStatus'","field_format":"ANY"},"sip_status":{"field":"_snipeit_sip_status_7","value":"'$SnipeSipStatus'","field_format":"ANY"},"smart_status":{"field":"_snipeit_smart_status_12","value":"'$JamfSmartStatus'","field_format":"ANY"},"udid":{"field":"_snipeit_udid_9","value":"'$JamfUdid'","field_format":"ANY"},"public_ip":{"field":"_snipeit_public_ip_10","value":"'$JamfPublicIP'","field_format":"IP"},"local_ip":{"field":"_snipeit_local_ip_11","value":"'$JamfLocalIP'","field_format":"IP"},"jamf_url":{"field":"_snipeit_jamf_url_2","value":"'$JamfLink'","field_format":"URL"}'
+  SnipeUpdateAsset1='{"name":"'$JamfName'","custom_fields":{"MAC":{"field":"_snipeit_mac_1","value":"'$JamfMacAddress'","field_format":"MAC"},"alt_mac":{"field":"_snipeit_alt_mac_3","value":"'$JamfAlternateMacAddress'","field_format":"MAC"},"processor_type":{"field":"_snipeit_processor_type_4","value":"'$JamfProcessorType'","field_format":"ANY"},"processor_speed":{"field":"_snipeit_processor_speed_5","value":"'$JamfProcessorSpeed'","field_format":"NUMERIC"},"total_ram":{"field":"_snipeit_total_ram_6","value":"'$JamfTotalRam'","field_format":"NUMERIC"},"dep_status":{"field":"_snipeit_dep_status_8","value":"'$JamfDepStatus'","field_format":"ANY"},"sip_status":{"field":"_snipeit_sip_status_7","value":"'$SnipeSipStatus'","field_format":"ANY"},"smart_status":{"field":"_snipeit_smart_status_12","value":"'$JamfSmartStatus'","field_format":"ANY"},"udid":{"field":"_snipeit_udid_9","value":"'$JamfUdid'","field_format":"ANY"},"public_ip":{"field":"_snipeit_public_ip_10","value":"'$JamfPublicIP'","field_format":"IP"},"local_ip":{"field":"_snipeit_local_ip_11","value":"'$JamfLocalIP'","field_format":"IP"},"jamf_url":{"field":"_snipeit_jamf_url_2","value":"'$JamfLink'","field_format":"URL"}},"available_actions":{"checkout":true,"checkin":true,"clone":true,"restore":false,"update":true,"delete":false}}]}'
+
+  SnipeUpdateAsset='{"name":"'$JamfName'","_snipeit_mac_1":"'$JamfMacAddress'","_snipeit_alt_mac_3":"'$JamfAlternateMacAddress'","_snipeit_processor_type_4":"'$JamfProcessorType'","_snipeit_processor_speed_5":"'$JamfProcessorSpeed'","_snipeit_total_ram_6":"'$JamfTotalRam'","_snipeit_dep_status_8":"'$JamfDepStatus'","_snipeit_sip_status_7":"'$SnipeSipStatus'","_snipeit_smart_status_12":"'$JamfSmartStatus'","_snipeit_udid_9":"'$JamfUdid'","_snipeit_public_ip_10":"'$JamfPublicIP'","_snipeit_local_ip:"'$JamfLocalIP'","_snipeit_jamf_url_2":"'$JamfLink'"}'
+
   # Snipe-IT API update:
-  curl -s -X PUT -H "Authorization: Bearer $SnipeBearer" -H "Content-Type: application/json" "$SnipeServer/api/v1/hardware/$SnipeId" -d "$SnipeUpdateAsset1" # "$SnipeUpdateAsset1"
+  curl -s -X PUT -H "Authorization: Bearer $SnipeBearer" -H "Content-Type: application/json" "$SnipeServer/hardware/$SnipeId" -d "$SnipeUpdateAsset1"
 fi
 
 
