@@ -65,24 +65,6 @@ JamfInfoArray+=("$JamfLastCheckIn")
 SnipeSearch=$(curl -s -H "Authorization: Bearer $SnipeBearer" "$SnipeServer/hardware?limit=2&offset=0&search=$SerialNumber")
 # Parse Snipe results to find "id":
 SnipeId=$(echo "$SnipeSearch" | grep -Eo '"id"[^,]*' | awk -F ":" '{print $2; exit}')
-SnipeAssetTag=$(echo "$SnipeSearch" | grep -Eo '"asset_tag"[^,]*' | awk -F ":" '{print $2}' | sed 's/"//g' )
-# Gather custom field json data:
-SnipeCustomFields=()
-while IFS=$'\n' read -r line;do
-  SnipeCustomFields+=("$line")
-done < <(echo "$SnipeSearch" | grep -Eo '"field":"_snipeit_[a-zA-z]{1,100}_[0-9]{1,100}"' | awk -F ":" '{print $2}' | sed 's/"//g')
-unset IFS
-
-SnipeUpdateAsset='{"name":"'${JamfInfoArray[0]}'",'
-JamfInfoArrayCounter=1
-# Loop through custom fields to build payload:
-for i in "${SnipeCustomFields[@]}"; do
-  SnipeUpdateAsset=$SnipeUpdateAsset'"'$i'":"'${JamfInfoArray[$JamfInfoArrayCounter]}'",'
-  JamfInfoArrayCounter=$((JamfInfoArrayCounter+1))
-done
-
-SnipeUpdateAsset=$(echo "$SnipeUpdateAsset" | sed 's/,$/}/')
-
 # If no Snipe ID was found:
 if [[ -z "$SnipeId" ]]; then
   echo "no asset found; needs creation"
@@ -102,17 +84,51 @@ if [[ -z "$SnipeId" ]]; then
   SnipeNewAsset='{"status_id":1,"model_id":'$SnipeModelId',"name":"'${JamfInfoArray[0]}'","serial":"'$SerialNumber'"}'
   # Create New Asset:
   curl -s -X POST -H "Authorization: Bearer $SnipeBearer" -H "Content-Type: application/json" "$SnipeServer/hardware" -d "$SnipeNewAsset"
+  sleep 5
   # Search for new asset:
   SnipeSearch=$(curl -s -H "Authorization: Bearer $SnipeBearer" "$SnipeServer/hardware?limit=2&offset=0&search=$SerialNumber")
   # Parse Snipe results to find "id":
   SnipeId=$(echo "$SnipeSearch" | grep -Eo '"id"[^,]*' | awk -F ":" '{print $2; exit}')
   SnipeAssetTag=$(echo "$SnipeSearch" | grep -Eo '"asset_tag"[^,]*' | awk -F ":" '{print $2}' | sed 's/"//g' )
+  # Gather custom field json data:
+  SnipeCustomFields=()
+  while IFS=$'\n' read -r line;do
+    SnipeCustomFields+=("$line")
+  done < <(echo "$SnipeSearch" | grep -Eo '"field":"_snipeit_[a-zA-z]{1,100}_[0-9]{1,100}"' | awk -F ":" '{print $2}' | sed 's/"//g')
+  unset IFS
+  # Build JSON payload
+  SnipeUpdateAsset='{"name":"'${JamfInfoArray[0]}'",'
+  JamfInfoArrayCounter=1
+  # Loop through custom fields to build payload:
+  for i in "${SnipeCustomFields[@]}"; do
+    SnipeUpdateAsset=$SnipeUpdateAsset'"'$i'":"'${JamfInfoArray[$JamfInfoArrayCounter]}'",'
+    JamfInfoArrayCounter=$((JamfInfoArrayCounter+1))
+  done
+  #Take out last comma and close brackets
+  SnipeUpdateAsset=$(echo "$SnipeUpdateAsset" | sed 's/,$/}/')
   # Update Custom Fields in Snipe:
   curl -s -X PUT -H "Authorization: Bearer $SnipeBearer" -H "Content-Type: application/json" "$SnipeServer/hardware/$SnipeId" -d "$SnipeUpdateAsset"
   #Update Jamf Asset Tag with Snipe info:
   /usr/local/bin/jamf recon -assetTag "$SnipeAssetTag"
 else
   echo "Device found in Snipe, updating record"
+  SnipeAssetTag=$(echo "$SnipeSearch" | grep -Eo '"asset_tag"[^,]*' | awk -F ":" '{print $2}' | sed 's/"//g' )
+  # Gather custom field json data:
+  SnipeCustomFields=()
+  while IFS=$'\n' read -r line;do
+    SnipeCustomFields+=("$line")
+  done < <(echo "$SnipeSearch" | grep -Eo '"field":"_snipeit_[a-zA-z]{1,100}_[0-9]{1,100}"' | awk -F ":" '{print $2}' | sed 's/"//g')
+  unset IFS
+  # Build JSON payload
+  SnipeUpdateAsset='{"name":"'${JamfInfoArray[0]}'",'
+  JamfInfoArrayCounter=1
+  # Loop through custom fields to build payload:
+  for i in "${SnipeCustomFields[@]}"; do
+    SnipeUpdateAsset=$SnipeUpdateAsset'"'$i'":"'${JamfInfoArray[$JamfInfoArrayCounter]}'",'
+    JamfInfoArrayCounter=$((JamfInfoArrayCounter+1))
+  done
+  #Take out last comma and close brackets
+  SnipeUpdateAsset=$(echo "$SnipeUpdateAsset" | sed 's/,$/}/')
   # Snipe-IT API update:
   curl -s -X PUT -H "Authorization: Bearer $SnipeBearer" -H "Content-Type: application/json" "$SnipeServer/hardware/$SnipeId" -d "$SnipeUpdateAsset"
   #Update Jamf Asset Tag with Snipe info:
