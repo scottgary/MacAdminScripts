@@ -37,10 +37,15 @@ JamfInfoArray+=("$JamfLastCheckIn")
 SnipeSearch=$(curl -s -H "Authorization: Bearer $SnipeBearer" "$SnipeServer/hardware?limit=2&offset=0&search=$SerialNumber")
 # Parse Snipe results to find "id":
 SnipeId=$(echo "$SnipeSearch" | grep -Eo '"id"[^,]*' | awk -F ":" '{print $2; exit}')
-
-# JSON Payload:
-SnipeUpdateAsset='{"name":"'${JamfInfoArray[0]}'", "'${SnipeCustomFields[0]}'":"'${JamfInfoArray[1]}'","'${SnipeCustomFields[1]}'":"'${JamfInfoArray[2]}'","'${SnipeCustomFields[2]}'":"'${JamfInfoArray[3]}'","'${SnipeCustomFields[3]}'":"'${JamfInfoArray[4]}'"}'
-# Update Snipe custom fields:
-curl -s -X PUT -H "Authorization: Bearer $SnipeBearer" -H "Content-Type: application/json" "$SnipeServer/hardware/$SnipeId" -d "$SnipeUpdateAsset"
+if [[ -z "$SnipeId" ]]; then
+  echo "No device found; exiting"
+  exit 0
+else
+  echo "Updating device record"
+  # JSON Payload:
+  SnipeUpdateAsset='{"name":"'${JamfInfoArray[0]}'", "'${SnipeCustomFields[0]}'":"'${JamfInfoArray[1]}'","'${SnipeCustomFields[1]}'":"'${JamfInfoArray[2]}'","'${SnipeCustomFields[2]}'":"'${JamfInfoArray[3]}'","'${SnipeCustomFields[3]}'":"'${JamfInfoArray[4]}'"}'
+  # Update Snipe custom fields:
+  curl -s -X PUT -H "Authorization: Bearer $SnipeBearer" -H "Content-Type: application/json" "$SnipeServer/hardware/$SnipeId" -d "$SnipeUpdateAsset"
+fi
 
 exit 0

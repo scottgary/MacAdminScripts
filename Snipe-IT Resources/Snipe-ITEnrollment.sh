@@ -56,6 +56,10 @@ JamfLocalIP=$(echo "$JamfRecord" | xmllint --xpath '/computer/general/last_repor
 JamfInfoArray+=("$JamfLocalIP")
 JamfLink="https://measuresforjustice.jamfcloud.com/computers.html?id=$JamfId"
 JamfInfoArray+=("$JamfLink")
+JamfOsVersion=$(echo "$JamfRecord" | xmllint --xpath '/computer/hardware/os_version/text()' -)
+JamfInfoArray+=("$JamfOsVersion")
+JamfLastCheckIn=$(echo "$JamfRecord" | xmllint --xpath '/computer/general/last_contact_time/text()' -)
+JamfInfoArray+=("$JamfLastCheckIn")
 
 # Snipe searh for asset by serial:
 SnipeSearch=$(curl -s -H "Authorization: Bearer $SnipeBearer" "$SnipeServer/hardware?limit=2&offset=0&search=$SerialNumber")
