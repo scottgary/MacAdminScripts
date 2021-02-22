@@ -8,7 +8,7 @@ echo -n "jamfapiuser:password" | base64
 # decode to verify
 echo -n "amFtZmFwaXVzZXI6cGFzc3dvcmQ=" | base64 --decode
 ```
-If you do not already have an API token for your Snipe-IT instance one can be generated using [these]{https://snipe-it.readme.io/reference#generating-api-tokens} instructions.
+If you do not already have an API token for your Snipe-IT instance one can be generated using [these](https://snipe-it.readme.io/reference#generating-api-tokens) instructions.
 
 ```
 # Jamf Variables:
@@ -36,4 +36,5 @@ This also updates the Snipe-IT `name` field to the current machine name in Jamf.
 The `JamfInfoArray` array will build the JSON payload for the update call. The custom fields you are looking to update should be pulled from jamf in the same order they appear in Snipe-IT. This also updates the Snipe-IT `name` field to the current machine name in Jamf as well as the Jamf Asset Tag field to match Snipe-IT. If no device is found in Snipe-It matching the device unique serial number the device will be created and assigned the next available asset tag using the Jamf Model information.
 
 *Currently working on creating new model if model id does not already exist in Snipe-IT*
+
 
