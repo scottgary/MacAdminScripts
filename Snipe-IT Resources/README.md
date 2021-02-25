@@ -40,3 +40,23 @@ The `JamfInfoArray` array will build the JSON payload for the update call. The c
 **Currently working on creating new model if model id does not already exist in Snipe-IT**
 
 ## Snipe-ITRequestableAssets.sh
+
+
+## SnipeLicenseRequests.sh
+
+`Title` and `Heading` are used by Jamf Helper. `HelperIcon` can be passed as path to icns icon file
+```
+Title=""
+Heading=""
+HelperBinary="/Library/Application Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper"
+HelperIcon=""
+```
+Slack webhook information. Requests will fe fired into the listed channel
+```
+# Slack Webook variables:
+SlackHook="" #Webhook URL
+Channel=""
+Username=""
+EMOJI=""
+```
+Query popup will search all Snipe-IT Licenses and return information to user using JamfHelper. If the available seat count is greater than `0` the helper will have a `Request` button added so users may request existing unused seats.
