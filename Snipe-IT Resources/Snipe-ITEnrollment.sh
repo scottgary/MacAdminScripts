@@ -7,7 +7,6 @@
 ################################################################################
 # Global Vars                                                                  #
 ################################################################################
-
 # Jamf Variables:
 JamfServer="https://example.jamfcloud.com"
 # Jamf credentials base64 encoded
