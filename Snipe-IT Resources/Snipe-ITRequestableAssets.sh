@@ -83,7 +83,7 @@ UserSelectedSerialNumber=$(echo "$UserSelection" | awk -F " " '{print $12}')
 UserSerialSearch=$(curl -s -H "Authorization: Bearer $SnipeBearer" "$SnipeServer/hardware?limit=2&offset=0&search=$UserSelectedSerialNumber")
 UserSelectedId=$(echo "$UserSerialSearch" | grep -Eo '"id"[^,]*' | awk -F ":" '{print $2; exit}')
 
-SlackMessage="New hardware request by $SnipeUsername \nhttps://mfj.snipe-it.io/hardware/$UserSelectedId"
+SlackMessage="New hardware request by $SnipeUsername \n$SnipeServer/hardware/$UserSelectedId"
 Payload="payload={\"channel\": \"$Channel\", \"username\": \"$Username\", \"text\": \"$SlackMessage\", \"icon_emoji\": \"$EMOJI\"}"
 curl -s -X POST --data-urlencode "$Payload" "$SlackHook"
 
