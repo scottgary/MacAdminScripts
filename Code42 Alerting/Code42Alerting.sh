@@ -7,14 +7,14 @@
 # Requires [jq](https://stedolan.github.io/jq/download/) to parse json         #
 ################################################################################
 # Code42 Variables
-Code42Server=""
+Code42Server="https://api.us.code42.com"
 username=""
 password=""
 # Slack Variables
 SlackHook="" #Webhook URL
-Channel=""
-Username=""
-EMOJI="" # Used as user icon
+Channel="#it-alerts"
+Username="Code42 Alert"
+EMOJI=":code42:" # Used as user icon
 
 # Check for jq and quit if not installed
 CheckJQ=$(which jq)
@@ -68,7 +68,6 @@ for AlertID in "${AlertIDs[@]}"; do
   # Get alert details:
   # Kill loop if null alerts:
   if [[ "$AlertID" == "null" ]]; then
-    #quick if no alerts
     echo "No Code42 alerts found!"
     break
   fi
@@ -89,6 +88,8 @@ for AlertID in "${AlertIDs[@]}"; do
   AlertStatus=$(echo "$AlertDetails" | jq '.alert .state' | sed 's/\"//g')
   AlertTimestamp=$(echo "$AlertDetails" | jq '.alert .observation .observedAt' | sed 's/\"//g')
   AlertURL=$(echo "$AlertDetails" | jq '.alert .alertUrl' | sed 's/\"//g')
+  AlertEventID=$(echo "$AlertDetails" | jq '.alert .observation .data' | awk -F 'eventId' '{print$2}' | awk -F ':\"' '{print $1}' | awk -F ':' '{print $2}' | awk -F ',' '{print $1}'| sed 's/\\"//g')
+  AlertEventPath=$(echo "$AlertDetails" | jq '.alert .observation .data' | awk -F 'path' '{print$2}' | awk -F ':\"' '{print $1}' | awk -F ':' '{print $2}' | awk -F ',' '{print $1}'| sed 's/\\"//g')
 
 #Parse by Alert Type:
   # Flight Risk Alerts
@@ -96,11 +97,12 @@ for AlertID in "${AlertIDs[@]}"; do
     # Add note to alert that this was seen:
     echo "Adding note to ticket for acknowledgment"
     data='{  "tenantId": "'$TenantID'", "alertId": '$AlertID', "note": "IT-Service Bot has reviewed this alert" }'
-    curl -sk -X POST "$Code42Server"/v1/alerts/add-note \
+    AddNote=$(curl -sk -X POST "$Code42Server"/v1/alerts/add-note \
     -H "accept: text/plain" \
     -H "Authorization: Bearer $BearerToken" \
     -H "Content-Type: application/json" \
-    -d "$data"
+    -d "$data")
+    #echo "$AddNote"
     sleep 1
     # Place user in High Risk Grouping:
     echo "adding user to High-Risk grouping"
@@ -113,11 +115,12 @@ for AlertID in "${AlertIDs[@]}"; do
     # Close alert
     echo "Dismiss alert once seen and action has been taken"
     data='{  "tenantId": "'$TenantID'", "alertIds": [ '$AlertID' ], "state": "RESOLVED" }'
-    curl -sk -X POST "$Code42Server"/v1/alerts/update-state \
+    DismissAlert=$(curl -sk -X POST "$Code42Server"/v1/alerts/update-state \
     -H "accept: text/plain" \
     -H "Authorization: Bearer $BearerToken" \
     -H "Content-Type: application/json" \
-    -d "$data"
+    -d "$data")
+    #echo "$DismissAlert"
   # Rules for Slack alerts:
   elif [[ "$AlertName" == "Salesforce report exfiltration" ]] || [[ "$AlertName" == "Copy to external drive" ]] || [[ "$AlertName" == "Source code exfiltration by extension" ]] || [[ "$AlertName" == "Public on Web" ]] || [[ "$AlertName" == "Exposure on an endpoint" ]] || [[ "$AlertName" == "Cloud share permission changes" ]]; then
     # Slack alerting for issue:
@@ -126,11 +129,37 @@ for AlertID in "${AlertIDs[@]}"; do
     # Add note to alert that this was seen:
     echo "Adding note to ticket for acknowledgment"
     data='{  "tenantId": "'$TenantID'", "alertId": '$AlertID', "note": "IT-Service Bot has reviewed this alert and sent this infomration to Slack" }'
+    AddNote=$(curl -sk -X POST "$Code42Server"/v1/alerts/add-note \
+    -H "accept: text/plain" \
+    -H "Authorization: Bearer $BearerToken" \
+    -H "Content-Type: application/json" \
+    -d "$data")
+    #echo "$AddNote"
+  elif [[ "$AlertName" == "Critical Alerts" ]]; then
+    # Add note to alert that this was seen:
+    echo "Adding note to ticket for acknowledgment"
+    data='{  "tenantId": "'$TenantID'", "alertId": '$AlertID', "note": "IT-Service Bot has reviewed this alert and will create a case from this information" }'
     curl -sk -X POST "$Code42Server"/v1/alerts/add-note \
     -H "accept: text/plain" \
     -H "Authorization: Bearer $BearerToken" \
     -H "Content-Type: application/json" \
     -d "$data"
+    # Create case from data
+    CaseData='{"name": "Critical Alert - '$AlertActor'", "description": "'$AlertName'", "findings": "'$AlertEventPath'", "subject": "'$AlertActorID'", "assignee": null}'
+    NewCase=$(curl -sk -X POST "$Code42Server"/v1/cases \
+    -H "content-type: application/json" \
+    -H "authorization: Bearer $BearerToken" \
+    -d "$CaseData")
+    #echo "$NewCase" | jq '.'
+    CaseNumber=$(echo "$NewCase" | jq '.number')
+    #echo "$CaseNumber"
+    # Populate case from Alert
+    curl -X POST "$Code42Server/v1/cases/$CaseNumber/fileevent/$AlertEventID" \
+    -H "content-type: application/json" \
+    -H "authorization: Bearer $BearerToken"
+    # Slack message for alerting:
+    AlertSlackNotification="Alert Name: $AlertName \nDescription: $AlertDesription \nUser: $AlertActor \nSeverity: $AlertSeverity \nStatus: $AlertStatus \nTimestamp: $AlertTimestamp \nURL: $AlertURL"
+    SlackNotify "$AlertSlackNotification"
   fi
 done
 
