@@ -135,7 +135,7 @@ for AlertID in "${AlertIDs[@]}"; do
     -H "Content-Type: application/json" \
     -d "$data")
     #echo "$AddNote"
-  elif [[ "$AlertName" == "Critical Alerts" ]]; then
+  elif [[ "$AlertName" == "Critical Alerts" ]] || [[ "$AlertName" == "Password exfiltration" ]]; then
     # Add note to alert that this was seen:
     echo "Adding note to ticket for acknowledgment"
     data='{  "tenantId": "'$TenantID'", "alertId": '$AlertID', "note": "IT-Service Bot has reviewed this alert and will create a case from this information" }'
