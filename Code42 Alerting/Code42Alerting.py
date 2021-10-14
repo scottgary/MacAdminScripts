@@ -110,7 +110,7 @@ for alert in alerts:
         caseNumber = str(newCase['number'])
         print(caseNumber)
         # Adding file activity to alert:
-        caseFileActivity = requests.post(code42Url+'/v1/cases/'+caseNumber+'/fileevent/'+alertEventID, headers)
-        print(caseFileActivity.text)
+        data = '{"events":["'+alertEventID+'"]}'
+        caseFileActivity = requests.post(code42Url+'/v1/cases/'+caseNumber+'/fileevent', headers=headers, data=data)
     time.sleep(1)
 print('No more alerts found')
