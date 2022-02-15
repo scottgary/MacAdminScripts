@@ -16,7 +16,7 @@ JamfServer=""
 #DevAdmin ID info
 DevId=""
 DevPw=""
-
+AdminAccount=""
 # Make needed DIR
 mkdir -p ROOT/Applications/Research\ Tools
 mkdir Scripts
@@ -27,7 +27,7 @@ NotarizeMe(){
   AppPath="$2"
   # Send Notarization
   Req=$(/usr/bin/xcrun altool --notarize-app \
-    --primary-bundle-id "io.mfj.$AppName" \
+    --primary-bundle-id "com.example.$AppName" \
     --username "$DevId" --password "$DevPw" \
     --file "$NotarizePath" \
     --output-format "xml")
@@ -38,7 +38,7 @@ NotarizeMe(){
     ReqUUID=$(/usr/bin/xcrun altool --notarization-info "$ReqUUID" -u "$DevId" -p "$DevPw" | grep "Status:" | awk -F " " '{print $2}')
   done
   # Step 3: staple the ticket
-  sudo -u mfjadmin /usr/bin/xcrun stapler staple "$AppPath"
+  sudo -u $AdminAccount /usr/bin/xcrun stapler staple "$AppPath"
 }
 
 # Download new build:
@@ -50,7 +50,7 @@ NotarizeMe "$AppName.app.zip" "ROOT/Applications/Research Tools/$AppName.app"
 
 # Upload new patch to PatchServer
 curl -s -X POST \
-  "https://jamf-patch.mfj.io/api/v1/title/$AppName/version?=" \
+  "https://jamf-patch.example.io/api/v1/title/$AppName/version?=" \
   -H 'Accept: */*' \
   -H "Authorization: Bearer $JamfAPIToken" \
   -H 'Content-Type: application/json' \
